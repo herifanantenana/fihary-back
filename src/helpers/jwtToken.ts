@@ -1,6 +1,7 @@
 import * as jwt from "jsonwebtoken";
 import { UnauthorizedException } from '../exceptions/internals';
 import { ErrorCode } from '../exceptions/root';
+import { hashids } from '../index';
 
 export const verifyToken = (token: string, secret: string) => {
 	try {
@@ -12,4 +13,9 @@ export const verifyToken = (token: string, secret: string) => {
 			throw new UnauthorizedException("Token expired!", ErrorCode.TOKEN_EXPIRED, error);
 		throw new UnauthorizedException(error.message, ErrorCode.UNAUTHORIZED, error);
 	}
+}
+
+export const genRef = (data: string) => {
+	const hash = hashids.encode(data.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0));
+	return hash;
 }

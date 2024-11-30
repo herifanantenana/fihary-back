@@ -19,48 +19,199 @@ enum RoleAdmin {
     STOCK_ADMIN
 }
 
+enum RoleUser {
+    USER_USER
+    BOX_USER
+}
+
+enum UnityProduct {
+    KILO
+    UNITY
+    BOT
+}
+
+enum StatusCommand {
+    PENDING
+    CONFIRMED
+    LIVERED
+    REJECTED
+}
+
+model Category {
+    id       Int       @id @default(autoincrement())
+    name     String    @unique
+    products Product[]
+
+    @@map("categories")
+}
+
 model City {
-    id     Int     @id @default(autoincrement())
-    name   String  @unique
-    places Place[]
-    stock  Stock[]
+    id            Int           @id @default(autoincrement())
+    name          String        @unique
+    places        Place[]
+    stocks        Stock[]
+    users         User[]
+    user_commands UserCommand[]
 
     @@map("cities")
 }
 
 model Place {
-    id      Int     @id @default(autoincrement())
-    name    String
-    city_id Int
-    city    City    @relation(fields: [city_id], references: [id])
-    stock   Stock[]
+    id            Int           @id @default(autoincrement())
+    name          String
+    city_id       Int
+    city          City          @relation(fields: [city_id], references: [id])
+    stocks        Stock[]
+    boxes         Box[]
+    users         User[]
+    user_commands UserCommand[]
 
     @@map("places")
 }
 
 model Admin {
     id           Int       @id @default(autoincrement())
+    ref          String    @unique
     fullname     String
     email        String    @unique
     phone_number String    @unique
+    password     String
     role         RoleAdmin @default(SUPER_ADMIN)
     image_url    String
     image_id     String
     image_name   String
-    stock_id     Int?
-    stock        Stock?     @relation(fields: [stock_id], references: [id])
+    stock_id     Int
+    stock        Stock    @relation(fields: [stock_id], references: [id])
 
     @@map("admins")
 }
 
 model Stock {
-    id       Int     @id @default(autoincrement())
-    name     String  @unique
-    city_id  Int
-    city     City    @relation(fields: [city_id], references: [id])
-    place_id Int
-    place    Place   @relation(fields: [place_id], references: [id])
-    Admin    Admin[]
+    id             Int            @id @default(autoincrement())
+    ref            String         @unique
+    name           String         @unique
+    image_url      String?
+    city_id        Int
+    city           City           @relation(fields: [city_id], references: [id])
+    place_id       Int
+    place          Place          @relation(fields: [place_id], references: [id])
+    admins         Admin[]
+    boxes          Box[]
+    stock_products StockProduct[]
 
     @@map("stocks")
+}
+
+model Box {
+    id           Int          @id @default(autoincrement())
+    ref          String       @unique
+    phone_number String       @unique
+    password     String
+    role         RoleUser     @default(BOX_USER)
+    stock_id     Int
+    stock        Stock        @relation(fields: [stock_id], references: [id])
+    place_id     Int
+    place        Place        @relation(fields: [place_id], references: [id])
+    box_commands BoxCommand[]
+
+    @@map("boxes")
+}
+
+model Product {
+    id                 Int               @id @default(autoincrement())
+    ref                String            @unique
+    name               String
+    description        String
+    price_unit         Int
+    unity              UnityProduct
+    image_url          String
+    categoryId         Int
+    category           Category          @relation(fields: [categoryId], references: [id])
+    stock_products     StockProduct[]
+    box_command_items  BoxCommandItem[]
+    user_command_items UserCommandItem[]
+
+    @@map("products")
+}
+
+model StockProduct {
+    id         Int     @id @default(autoincrement())
+    ref        String  @unique
+    stock_id   Int
+    stock      Stock   @relation(fields: [stock_id], references: [id])
+    product_id Int
+    product    Product @relation(fields: [product_id], references: [id])
+    quantity   Int
+
+    @@map("stock_products")
+}
+
+model BoxCommand {
+    id                Int              @id @default(autoincrement())
+    ref               String           @unique
+    status            StatusCommand    @default(PENDING)
+    box_id            Int
+    box               Box              @relation(fields: [box_id], references: [id])
+    amount            Int
+    box_command_items BoxCommandItem[]
+
+    @@map("box_commands")
+}
+
+model BoxCommandItem {
+    id             Int        @id @default(autoincrement())
+    box_command_id Int
+    box_command    BoxCommand @relation(fields: [box_command_id], references: [id])
+    product_id     Int
+    product        Product    @relation(fields: [product_id], references: [id])
+    quantity       Int
+
+    @@map("box_command_Items")
+}
+
+model User {
+    id            Int           @id @default(autoincrement())
+    ref           String        @unique
+    fullname      String
+    email         String        @unique
+    phone_number  String        @unique
+    password      String
+    role          RoleUser      @default(USER_USER)
+    image_url     String?
+    city_id       Int?
+    city          City?         @relation(fields: [city_id], references: [id])
+    place_id      Int?
+    place         Place?        @relation(fields: [place_id], references: [id])
+    user_commands UserCommand[]
+
+    @@map("users")
+}
+
+model UserCommand {
+    id                 Int               @id @default(autoincrement())
+    ref                String            @unique
+    status             StatusCommand     @default(PENDING)
+    phone_number       String
+    user_id            Int
+    user               User              @relation(fields: [user_id], references: [id])
+    net_amount         Int
+    city_id            Int
+    city               City              @relation(fields: [city_id], references: [id])
+    place_id           Int
+    place              Place             @relation(fields: [place_id], references: [id])
+    spots              String
+    user_command_items UserCommandItem[]
+
+    @@map("user_commands")
+}
+
+model UserCommandItem {
+    id              Int         @id @default(autoincrement())
+    user_command_id Int
+    user_command    UserCommand @relation(fields: [user_command_id], references: [id])
+    product_id      Int
+    product         Product     @relation(fields: [product_id], references: [id])
+    quantity        Int
+
+    @@map("user_command_Items")
 }
