@@ -1,3 +1,4 @@
+import { PrismaClient } from '@prisma/client';
 import compression from 'compression';
 import cors from "cors";
 import express, { Express } from "express";
@@ -12,6 +13,10 @@ app.use(helmet());
 app.use(compression({
 	threshold: 2 * 1024 * 1024
 }));
+
+export const prisma = new PrismaClient({
+	log: ["query", "error", "warn", "info"]
+})
 
 app.use(errorMiddleware);
 

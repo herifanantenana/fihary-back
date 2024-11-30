@@ -5,10 +5,26 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
+    previewFeatures = ["omitApi"]
 }
 
 datasource db {
     provider = "mysql"
     url      = env("DATABASE_URL")
+}
+
+enum RoleAdmin {
+    SUPER_ADMIN
+    STOCK_ADMIN
+}
+
+model Admin {
+    id           Int       @id @default(autoincrement())
+    fullname     String
+    email        String    @unique
+    phone_number String    @unique
+    role         RoleAdmin @default(SUPER_ADMIN)
+
+    @@map("admins")
 }
