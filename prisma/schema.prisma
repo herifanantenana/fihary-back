@@ -77,9 +77,9 @@ model Admin {
     phone_number String    @unique
     password     String
     role         RoleAdmin @default(SUPER_ADMIN)
-    image_url    String
-    image_id     String
-    image_name   String
+    image_url    String?
+    image_id     String?
+    image_name   String?
     stock_id     Int
     stock        Stock    @relation(fields: [stock_id], references: [id])
 

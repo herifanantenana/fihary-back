@@ -6,7 +6,6 @@ import { errorHandlerThis as err_hdl } from "../middlewares/errors";
 
 const rootRouter: Router = Router();
 
-rootRouter.post("/admin/admin/create", err_hdl(createStockAdmin));
 rootRouter.use("/auth", authRouter);
 rootRouter.use("/admin", adminRouter);
 

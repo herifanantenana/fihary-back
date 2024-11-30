@@ -18,5 +18,5 @@ export const CreateStockAdminSchema = z.object({
 		);
 	}, {
 		message: "Invalid file. Expected an Express.Multer.File.",
-	})
+	}).optional().nullable()
 })

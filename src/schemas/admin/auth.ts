@@ -20,3 +20,13 @@ export const CreateSuperAdminSchema = z.object({
 		message: "Invalid file. Expected an Express.Multer.File.",
 	})
 })
+
+export const LoginAdminPasswordSchema = z.object({
+	ref: z.string().trim(),
+	email: z.string().trim().email(),
+	password: z.string().trim().min(8)
+})
+
+export const LoginAdminFacialSchema = z.object({
+	image: z.string().trim(),
+})
