@@ -19,12 +19,48 @@ enum RoleAdmin {
     STOCK_ADMIN
 }
 
+model City {
+    id     Int     @id @default(autoincrement())
+    name   String  @unique
+    places Place[]
+    stock  Stock[]
+
+    @@map("cities")
+}
+
+model Place {
+    id      Int     @id @default(autoincrement())
+    name    String
+    city_id Int
+    city    City    @relation(fields: [city_id], references: [id])
+    stock   Stock[]
+
+    @@map("places")
+}
+
 model Admin {
     id           Int       @id @default(autoincrement())
     fullname     String
     email        String    @unique
     phone_number String    @unique
     role         RoleAdmin @default(SUPER_ADMIN)
+    image_url    String
+    image_id     String
+    image_name   String
+    stock_id     Int?
+    stock        Stock?     @relation(fields: [stock_id], references: [id])
 
     @@map("admins")
+}
+
+model Stock {
+    id       Int     @id @default(autoincrement())
+    name     String  @unique
+    city_id  Int
+    city     City    @relation(fields: [city_id], references: [id])
+    place_id Int
+    place    Place   @relation(fields: [place_id], references: [id])
+    Admin    Admin[]
+
+    @@map("stocks")
 }
